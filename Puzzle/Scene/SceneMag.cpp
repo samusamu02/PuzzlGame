@@ -66,6 +66,7 @@ void SceneMag::Draw(void)
 bool SceneMag::SysInit(void)
 {
 	SetGraphMode(ScreenSizeX, ScreenSizeY, 32);
+	SetWindowIconID(001);
 	ChangeWindowMode(true);
 	SetWindowText("クッキーパズル");
 	if (DxLib_Init() == -1)
