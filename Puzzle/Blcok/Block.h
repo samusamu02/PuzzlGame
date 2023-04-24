@@ -114,12 +114,14 @@ private:
 	int resultPic_;
 	int conditionPic_;
 
+	// ランク画像
 	int rankS_;
 	int rankA_;
 	int rankB_;
 	int rankC_;
 	int rankD_;
 
+	// フィニッシュ時のランク画像
 	int StopPicS_;
 	int StopPicA_;
 	int StopPicB_;
