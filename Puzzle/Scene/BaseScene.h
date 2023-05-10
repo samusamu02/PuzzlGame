@@ -1,7 +1,7 @@
 #pragma once
 #include<memory>
 #include"../common/Vector2.h"
-#include "../Blcok/Block.h"
+#include "../Obj/Block.h"
 #include "Scene.h"
 class BaseScene;
 

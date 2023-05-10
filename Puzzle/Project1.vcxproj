@@ -143,7 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Blcok\Block.cpp" />
+    <ClCompile Include="Obj\Block.cpp" />
     <ClCompile Include="common\SoundPross.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene\SceneMag.cpp" />
@@ -152,8 +152,8 @@
     <ClCompile Include="Scene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Blcok\Block.h" />
-    <ClInclude Include="Blcok\image.h" />
+    <ClInclude Include="Obj\Block.h" />
+    <ClInclude Include="Obj\image.h" />
     <ClInclude Include="common\Dec.h" />
     <ClInclude Include="common\SoundPross.h" />
     <ClInclude Include="common\Vector2.h" />

@@ -1,8 +1,5 @@
 #pragma once
 #include<DxLib.h>
-#include"../Blcok/Block.h"
-
-
 class Key
 {
 public:

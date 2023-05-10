@@ -33,7 +33,7 @@ void SoundProcess::Init(Scene nowScene)
 		Load(LoadSoundMem("Resource/Sound/BGM/GameSceneBGM.mp3"), SOUNDNAME_BGM::GameSceneBGM);
 
 		// SEÇÃÉçÅ[Éh
-		Load(LoadSoundMem("Resource/Sound/SE/select07.mp3"), SOUNDNAME_SE::Move);
+		Load(LoadSoundMem("Resource/Sound/SE/select07.mp3"), SOUNDNAME_SE::MoveBlock);
 		Load(LoadSoundMem("Resource/Sound/SE/Zselect.mp3"), SOUNDNAME_SE::Select);
 		Load(LoadSoundMem("Resource/Sound/SE/delte.mp3"), SOUNDNAME_SE::Delete);
 		Load(LoadSoundMem("Resource/Sound/SE/finish.mp3"), SOUNDNAME_SE::Finish);

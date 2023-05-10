@@ -1,6 +1,4 @@
 #pragma once
-#include <list>
-#include <memory>
 #include "image.h"
 #include "../common/Vector2.h"
 #include "../common/Dec.h"
@@ -11,18 +9,22 @@ constexpr int blockNumY = 6;	// ブロックの数（縦方向）
 // 現在のブロックの状態
 struct NowBlock
 {
-	int Type[blockNumX][blockNumY];
-	int  Drop[blockNumX][blockNumY];
-	bool Del[blockNumX][blockNumY];
+	int blockType[blockNumX][blockNumY];
+	int  bolockDrop_[blockNumX][blockNumY];
+	bool blockDelete_[blockNumX][blockNumY];
 };
 
 class Block
 {
 public:
+
 	Block();
 	~Block();
 
+	//　更新処理
 	void Update(void);
+
+	// 描画処理
 	void Draw(void);
 
 	// get関数
@@ -30,9 +32,12 @@ public:
 	float GetLimitTime(void);				// 制限時間の取得
 
 private:
+	// 初期化処理
 	void Init(void);
 
-	void Move(void);
+
+	void MoveBlock(void);
+	void UpdateBlock(void);
 	void DeleBlock(void);
 	void DownBlock(void);
 

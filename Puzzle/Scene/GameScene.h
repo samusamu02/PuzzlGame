@@ -1,7 +1,7 @@
 #pragma once
 #include "BaseScene.h"
 #include"../common/Dec.h"
-#include "../Blcok/Block.h"
+#include "../Obj/Block.h"
 class GameScene :
     public BaseScene
 {

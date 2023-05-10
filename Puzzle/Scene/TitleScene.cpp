@@ -2,7 +2,7 @@
 #include "TitleScene.h"
 #include "GameScene.h"
 #include "../Scene/SceneMag.h"
-#include "../Blcok/image.h"
+#include "../Obj/image.h"
 #include "../common/Dec.h"
 #include "../common/SoundPross.h"
 TitleScene::TitleScene()
@@ -16,7 +16,7 @@ TitleScene::TitleScene()
 	// タイトルシーンのBGM再生
 	lpSooundPross.PlayBackSound(SOUNDNAME_BGM::TitleSceneBGM, lpSooundPross.GetVolume(), true);
 
-	// 黒い画面が出るのでダミーで一回読んであげる
+	// 黒い画面が出るのでダミーで一度描画処理をする
 	DrawOwnScreen(0.0);
 }
 

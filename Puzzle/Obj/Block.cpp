@@ -22,18 +22,16 @@ void Block::Init(void)
 		for (int x = 0; x < block_witdh_; x++)
 		{
 			// ブロックをランダムに表示
-			nowBlock_.Type[x][y] = GetRand(9);
+			nowBlock_.blockType[x][y] = GetRand(9);
 
 			// 値の初期化
-			nowBlock_.Del[x][y] = 0;
-			nowBlock_.Drop[x][y] = 0;
+			nowBlock_.blockDelete_[x][y] = 0;
+			nowBlock_.bolockDrop_[x][y] = 0;
 		}
 	}
 
 	// 画像の読み込み
 	image_.LoadImg();
-	image_.LoadExplode();
-	image_.NumBerImg();
 
 	// 背景
 	backImage_ = LoadGraph("Resource/img/Summer2.jpg");
@@ -74,43 +72,17 @@ void Block::Update(void)
 		blockMult_ += 0.05;
 	}
 
-	Move();
+	// ブロックの移動処理
+	MoveBlock();
 
-	if (ZkeyCount_ == 1)
-	{
-		// 一時変数で入れ替え処理
-		int change_block;
-		change_block = nowBlock_.Type[boxpos_.x_ / blockSize_.x_][boxpos_.y_ / blockSize_.y_];
-		nowBlock_.Type[boxpos_.x_ / blockSize_.x_][boxpos_.y_ / blockSize_.y_] = nowBlock_.Type[boxSelpos_.x_ / blockSize_.x_][boxSelpos_.y_ / blockSize_.y_];
-		nowBlock_.Type[boxSelpos_.x_ / blockSize_.x_][boxSelpos_.y_ / blockSize_.y_] = change_block;
+	// ブロックの更新処理
+	UpdateBlock();
 
-		boxSelpos_.x_ = boxpos_.x_;
-		boxSelpos_.y_ = boxpos_.y_;
-	}
-	else if (ZkeyCount_ == 2 || setTime < 0)
-	{
-		// ブロックを削除
-		DeleBlock();
-
-		ZkeyCount_ = 0;
-
-		for (int y = 0; y < block_hight_; y++)
-		{
-			for (int x = 0; x < block_witdh_; x++)
-			{
-				// ブロックが消えたら
-				if (nowBlock_.Type[x][y] == -1)
-				{
-					nowBlock_.Type[x][y] = GetRand(5);	// 再配置
-					nowBlock_.Del[x][y] = 0;
-					nowBlock_.Drop[x][y] = 0;
-				}
-			}
-		}
-	}
+	// ブロックの落下処理
+	DownBlock();
 }
 
-void Block::Move(void)
+void Block::MoveBlock(void)
 {
 	// キー情報の取得
 	key_.GetKey();	
@@ -133,7 +105,7 @@ void Block::Move(void)
 				}
 
 				// サウンドの再生
-				lpSooundPross.PlayBackSound(SOUNDNAME_SE::Move,lpSooundPross.GetVolume(), false);
+				lpSooundPross.PlayBackSound(SOUNDNAME_SE::MoveBlock,lpSooundPross.GetVolume(), false);
 			}
 			if (key_.input[KEY_INPUT_LEFT] == 1)
 			{
@@ -144,7 +116,7 @@ void Block::Move(void)
 				}
 
 				// サウンドの再生
-				lpSooundPross.PlayBackSound(SOUNDNAME_SE::Move, lpSooundPross.GetVolume(), false);
+				lpSooundPross.PlayBackSound(SOUNDNAME_SE::MoveBlock, lpSooundPross.GetVolume(), false);
 			}
 			if (key_.input[KEY_INPUT_UP] == 1)
 			{
@@ -155,7 +127,7 @@ void Block::Move(void)
 				}
 
 				// サウンドの再生
-				lpSooundPross.PlayBackSound(SOUNDNAME_SE::Move, lpSooundPross.GetVolume(), false);
+				lpSooundPross.PlayBackSound(SOUNDNAME_SE::MoveBlock, lpSooundPross.GetVolume(), false);
 			}
 			if (key_.input[KEY_INPUT_DOWN] == 1)
 			{
@@ -166,7 +138,7 @@ void Block::Move(void)
 				}
 
 				// サウンドの再生
-				lpSooundPross.PlayBackSound(SOUNDNAME_SE::Move, lpSooundPross.GetVolume(), false);
+				lpSooundPross.PlayBackSound(SOUNDNAME_SE::MoveBlock, lpSooundPross.GetVolume(), false);
 			}
 
 			if (key_.input[KEY_INPUT_Z] == 1)
@@ -181,6 +153,42 @@ void Block::Move(void)
 	}
 }
 
+void Block::UpdateBlock(void)
+{
+	if (ZkeyCount_ == 1)
+	{
+		// 一時変数で入れ替え処理
+		int change_block;
+		change_block = nowBlock_.blockType[boxpos_.x_ / blockSize_.x_][boxpos_.y_ / blockSize_.y_];
+		nowBlock_.blockType[boxpos_.x_ / blockSize_.x_][boxpos_.y_ / blockSize_.y_] = nowBlock_.blockType[boxSelpos_.x_ / blockSize_.x_][boxSelpos_.y_ / blockSize_.y_];
+		nowBlock_.blockType[boxSelpos_.x_ / blockSize_.x_][boxSelpos_.y_ / blockSize_.y_] = change_block;
+
+		boxSelpos_.x_ = boxpos_.x_;
+		boxSelpos_.y_ = boxpos_.y_;
+	}
+	else if (ZkeyCount_ == 2 || setTime < 0)
+	{
+		// ブロックを削除
+		DeleBlock();
+
+		ZkeyCount_ = 0;
+
+		for (int y = 0; y < block_hight_; y++)
+		{
+			for (int x = 0; x < block_witdh_; x++)
+			{
+				// ブロックが消えたら
+				if (nowBlock_.blockType[x][y] == -1)
+				{
+					nowBlock_.blockType[x][y] = GetRand(5);	// 再配置
+					nowBlock_.blockDelete_[x][y] = 0;
+					nowBlock_.bolockDrop_[x][y] = 0;
+				}
+			}
+		}
+	}
+}
+
 void Block::DeleBlock(void)
 {
 	// X方向の消える処理
@@ -189,16 +197,16 @@ void Block::DeleBlock(void)
 		for (int x = 0; x < block_witdh_ - 2; x++)
 		{
 			// 3ブロック以上が一致しているかを確認する
-			if (nowBlock_.Type[x + 0][y] == nowBlock_.Type[x + 1][y] &&
-				nowBlock_.Type[x + 1][y] == nowBlock_.Type[x + 2][y] &&
-				nowBlock_.Type[x + 2][y] == nowBlock_.Type[x + 0][y] &&
-				nowBlock_.Type[x + 0][y] != -1 &&
-				nowBlock_.Type[x + 1][y] != -1 &&
-				nowBlock_.Type[x + 2][y] != -1)
+			if (nowBlock_.blockType[x + 0][y] == nowBlock_.blockType[x + 1][y] &&
+				nowBlock_.blockType[x + 1][y] == nowBlock_.blockType[x + 2][y] &&
+				nowBlock_.blockType[x + 2][y] == nowBlock_.blockType[x + 0][y] &&
+				nowBlock_.blockType[x + 0][y] != -1 &&
+				nowBlock_.blockType[x + 1][y] != -1 &&
+				nowBlock_.blockType[x + 2][y] != -1)
 			{
 				for (int i = 0; i < 3; i++)
 				{
-					nowBlock_.Del[x + i][y] = 1;	// もし一致したらブロックを消す
+					nowBlock_.blockDelete_[x + i][y] = 1;	// もし一致したらブロックを消す
 				}
 			}
 		}
@@ -209,16 +217,16 @@ void Block::DeleBlock(void)
 		for (int x = 0; x < block_witdh_; x++)
 		{
 			// 3ブロックが以上が一致しているかを確認する
-			if (nowBlock_.Type[x][y + 0] == nowBlock_.Type[x][y + 1] &&
-				nowBlock_.Type[x][y + 1] == nowBlock_.Type[x][y + 2] &&
-				nowBlock_.Type[x][y + 2] == nowBlock_.Type[x][y + 0] &&
-				nowBlock_.Type[x][y + 0] != -1 &&
-				nowBlock_.Type[x][y + 1] != -1 &&
-				nowBlock_.Type[x][y + 2] != -1)
+			if (nowBlock_.blockType[x][y + 0] == nowBlock_.blockType[x][y + 1] &&
+				nowBlock_.blockType[x][y + 1] == nowBlock_.blockType[x][y + 2] &&
+				nowBlock_.blockType[x][y + 2] == nowBlock_.blockType[x][y + 0] &&
+				nowBlock_.blockType[x][y + 0] != -1 &&
+				nowBlock_.blockType[x][y + 1] != -1 &&
+				nowBlock_.blockType[x][y + 2] != -1)
 			{
 				for (int i = 0; i < 3; i++)
 				{
-					nowBlock_.Del[x][y + i] = 1;	// もし一致したらブロックを消す
+					nowBlock_.blockDelete_[x][y + i] = 1;	// もし一致したらブロックを消す
 				}
 			}
 		}
@@ -229,14 +237,14 @@ void Block::DeleBlock(void)
 		for (int x = 0; x < block_witdh_; x++)
 		{
 			// ブロックが消えたら
-			if (nowBlock_.Del[x][y] == 1)
+			if (nowBlock_.blockDelete_[x][y] == 1)
 			{
 				// 再生する
 				lpSooundPross.PlayBackSound(SOUNDNAME_SE::Delete, lpSooundPross.GetVolume(), false);
 
 				// 値を戻す
-				nowBlock_.Del[x][y] = 0;	
-				nowBlock_.Type[x][y] = -1;
+				nowBlock_.blockDelete_[x][y] = 0;	
+				nowBlock_.blockType[x][y] = -1;
 				score_ = score_ + 100;
 			}
 		}
@@ -252,13 +260,13 @@ void Block::DownBlock(void)
 	{
 		for (int x = 0; x < block_witdh_; x++)
 		{
-			if (nowBlock_.Type[x][y] != -1)
+			if (nowBlock_.blockType[x][y] != -1)
 			{
 				for (int ye = y + 1; ye < 6; ye = ye + 1)
 				{
-					if (nowBlock_.Type[x][ye] == -1)
+					if (nowBlock_.blockType[x][ye] == -1)
 					{
-						nowBlock_.Drop[x][y] = nowBlock_.Drop[x][y] + 1;
+						nowBlock_.bolockDrop_[x][y] = nowBlock_.bolockDrop_[x][y] + 1;
 					}
 				}
 			}
@@ -268,12 +276,12 @@ void Block::DownBlock(void)
 			{
 				for (int x = 0; x < 6; x = x + 1)
 				{
-					if (nowBlock_.Drop[x][y] != 0)
+					if (nowBlock_.bolockDrop_[x][y] != 0)
 					{
-						nowBlock_.Type[x][y + nowBlock_.Drop[x][y]] = nowBlock_.Type[x][y];
-						nowBlock_.Type[x][y] = -1;
-						nowBlock_.Drop[x][y + nowBlock_.Drop[x][y]] = 0;
-						nowBlock_.Drop[x][y] = 0;
+						nowBlock_.blockType[x][y + nowBlock_.bolockDrop_[x][y]] = nowBlock_.blockType[x][y];
+						nowBlock_.blockType[x][y] = -1;
+						nowBlock_.bolockDrop_[x][y + nowBlock_.bolockDrop_[x][y]] = 0;
+						nowBlock_.bolockDrop_[x][y] = 0;
 					}
 				}
 			}
@@ -283,7 +291,6 @@ void Block::DownBlock(void)
 
 void Block::Draw(void)
 {
-
 	// ブロックの背景
 	DrawGraph(0, 0, backImage_, true);
 
@@ -293,6 +300,7 @@ void Block::Draw(void)
 	DrawGraph(0, 0, conditionPic_, true);
 	DrawGraph(0, 0, scorePic_, true);
 
+	// スコアに応じてランクを変更
 	if (score_ < 3000)
 	{
 		DrawGraph(0, 0, rankD_, true);
@@ -330,10 +338,10 @@ void Block::Draw(void)
 	{
 		for (int x = 0; x < block_witdh_; x++)
 		{
-			if (nowBlock_.Type[x][y] != -1)
+			if (nowBlock_.blockType[x][y] != -1)
 			{
 				// ブロック画像を描画する
-				DrawRotaGraph(x * blockSize_.x_ + BlockValX + 30, y * blockSize_.y_ + BlockValY, blockMult_, 0, image_.blockPic_[nowBlock_.Type[x][y]], true);
+				DrawRotaGraph(x * blockSize_.x_ + BlockValX + 30, y * blockSize_.y_ + BlockValY, blockMult_, 0, image_.blockPic_[nowBlock_.blockType[x][y]], true);
 			}
 
 
@@ -381,7 +389,7 @@ void Block::Draw(void)
 			for (int x = 0; x < block_witdh_; x++)
 			{
 				// ブロックにフィルターを掛ける
-				GraphFilter(image_.blockPic_[nowBlock_.Type[x][y]], DX_GRAPH_FILTER_MONO, -1, 45);
+				GraphFilter(image_.blockPic_[nowBlock_.blockType[x][y]], DX_GRAPH_FILTER_MONO, -1, 45);
 
 				// ランクをつける
 				if (score_ < 3000)

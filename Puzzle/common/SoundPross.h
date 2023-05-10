@@ -8,7 +8,7 @@
 //SE‚ÌŽí—Þ
 enum class SOUNDNAME_SE
 {
-	Move,
+	MoveBlock,
 	Select,
 	Delete,
 	Finish,
