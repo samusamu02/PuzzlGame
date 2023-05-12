@@ -2,7 +2,6 @@
 #include "TitleScene.h"
 #include "GameScene.h"
 #include "../Scene/SceneMag.h"
-#include "../Obj/image.h"
 #include "../common/Dec.h"
 #include "../common/SoundPross.h"
 TitleScene::TitleScene()
@@ -31,8 +30,6 @@ bool TitleScene::Init(void)
 	TitlePic_ = LoadGraph("Resource/img/TitlePic.png");
 	PlayKeyPic_ = LoadGraph("Resource/img/press th space key.png");
 	TitleBackGPic_ = LoadGraph("Resource/img/nightbackgroundwithmoon.png");
-	image_.LoadImg();
-
 	return true;
 }
 

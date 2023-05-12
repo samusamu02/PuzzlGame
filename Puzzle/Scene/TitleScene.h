@@ -31,8 +31,7 @@ private:
     double titleExrate = 0.0;
 
     double roll_ = 0;
-    Vector2 boxpos_;
-    Image image_;
+    Vector2 boxPos_;
     bool rollflg_ = true;
     NowBlock nowBlock_;
 };

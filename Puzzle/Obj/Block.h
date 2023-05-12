@@ -1,5 +1,5 @@
 #pragma once
-#include "image.h"
+#include <array>
 #include "../common/Vector2.h"
 #include "../common/Dec.h"
 
@@ -28,110 +28,117 @@ public:
 	void Draw(void);
 
 	// get関数
-	int GetScore();							// スコアの取得
-	float GetLimitTime(void);				// 制限時間の取得
+	int GetScore();				// スコアの取得
+	float GetLimitTime(void);	// 制限時間の取得
 
 private:
 	// 初期化処理
 	void Init(void);
 
+	// ブロックの画像のロード
+	void LoadBlockPic(void);
 
-	void MoveBlock(void);
+	// ランクの画像のロード
+	void LoadRankPic(void);
+
+	// 終了時のランクの画像のロード
+	void LoadFinishRankPic(void);
+
+	// 枠組みの画像のロード
+	void LoadFramePic(void);
+
+	// ブロックの移動処理
+	void ControlBlock(void);
+
+	// ブロックの更新処理
 	void UpdateBlock(void);
-	void DeleBlock(void);
-	void DownBlock(void);
 
-	unsigned int score_ = 0;				// スコア
+	// ブロックの削除処理
+	void DeleBlock(void);
+
+	// ブロックの落下処理
+	void DownBlock(void);
 
 	// キー入力
 	Key key_;
 
-	int keyCount_ = 0;
+	// 現在のブロック
+	NowBlock nowBlock_;	
+
+	// ブロックの座標
+	Vector2 blockPos_;
+
+	// ブロックのサイズ
+	Vector2 blockSize_ = { 96,96 };
+
+	// ボックスの座標
+	Vector2 boxPos_;
+
+	// 選択時のボックスの座標
+	Vector2 boxSelPos_;							
+
+	// スコアのフォント画像の座標
+	Vector2 scorePicPos_;
+
+	// タイムのフォント画像の座標
+	Vector2 timePicPos_;
+
+	// フォント画像のサイズ
+	Vector2 stringPicSize_ = { 10,320 };
+
+	// ブロックの配置
+	Vector2 blockNum_ = { 6,6 };
+
+	// ブロックの間隔
+	Vector2 blockValSize_ = { 80,200 };
+
+	// ボックスのサイズ
+	Vector2 boxSize_ = { 35,155 };
+
+	// 背景の画像のサイズ
+	Vector2 backPicSize_ = { 1024,768 };
+
 	// ブロックの大きさ
 	double blockMult_ = 0.0;
 
-	// ブロックのVal値
-	int BlockValX = 80;
-	int BlockValY = 200;
-
-	// ボックスのVal値
-	int boxValX = 35;
-	int boxValY = 155;
-
-	// ブロックの配置
-	int block_hight_ = 6;
-	int block_witdh_ = 6;
-
-	// 画像の大きさと座標
-	Vector2 blockpos_;
-	Vector2 blockSize_ = { 96,96 };
-
-	unsigned int ZkeyCount_ = 0;				// Zキーカウンター
-
-	Vector2 boxpos_;
-	Vector2 boxSelpos_;							// 選択用の画像の座標
+	// フォント画像の倍率を大きさ
+	double stringExRate_ = 1.0;
 
 	// タイマー系
-	float setTime = 5.0f;
+	float setTime_ = 5.0f;
 	float startTime = 4.0f;
 	float limitTime = 60.0f;
 	float deltaTime = 0.018f;
 
-	// フォント画像の倍率を大きさ
-	double stringExRate_ = 1.0;
-	int StringPicSizeX_ = 10;
-	int StringPicSizeY_ = 320;
+	// ブロック画像
+	std::array<int, 10> blockPic_;
 
-	// フォントハンドル
-	int FontHundle;
-	int FontHundle2;
-	int blockMoveCountFontHundle;
+	// ランク画像
+	std::array<int, 5> rankPic_;
 
-	// フォント画像の座標
-	Vector2 scorePicPos;
-	Vector2 clearScorePicPos;
-	Vector2 timePicPos;
-	Vector2  blockMoveCountPicPos;
-	Vector2 rankFontPic;
-
-	NowBlock nowBlock_;		// 現在のブロックの削除
-	Image image_;
-
-	// セレクター
-	int selectImage_;
-	int selectPicSizeX = 1019;
-	int selectPicSizeY = 767;
-
-	int selSelectorImage_;
-	int selSelectorPicSizeX_ = 1019;
-	int selSelectorPicSizeY_ = 767;
+	// フィニッシュ時のランク画像
+	std::array<int, 5> finishPic_;
 
 	// 背景画像
 	int backImage_;
-	int backPicSizeX = 1024;
-	int backPicSizeY = 768;
+
+	// スコア
+	unsigned int score_ = 0;				
+
+	// Zキーカウンター
+	unsigned int zkeyCount_ = 0;
+
+	// フォントハンドル
+	int fontHandle_a_;
+	int fontHandle_b_;
+	int blockMoveCountFontHandle_;
 
 	// フォント画像
-	int ClearScorePic_;
 	int timePic_;
 	int blockMoveCountPic_;
 	int scorePic_;
 	int resultPic_;
 	int conditionPic_;
-
-	// ランク画像
-	int rankS_;
-	int rankA_;
-	int rankB_;
-	int rankC_;
-	int rankD_;
-
-	// フィニッシュ時のランク画像
-	int StopPicS_;
-	int StopPicA_;
-	int StopPicB_;
-	int StopPicC_;
-	int StopPicD_;
 
 	// 枠組み
 	int blueFrame_;
@@ -143,7 +150,7 @@ private:
 	int blueFrameTimeAndUntilscore_;
 
 	// ループ内で処理を一回のみ行う用のカウント変数
-	int count_ = 0;
+	int loopcount_ = 0;
 
 	// 点滅カウント
 	int stringCount_ = 0;

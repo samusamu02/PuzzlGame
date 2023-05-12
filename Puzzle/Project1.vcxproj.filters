@@ -41,9 +41,6 @@
     <ClInclude Include="Obj\Block.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Obj\image.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="common\Dec.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

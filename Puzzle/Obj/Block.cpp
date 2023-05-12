@@ -1,6 +1,6 @@
 #include <DxLib.h>
 #include <time.h>
-#include <math.h>
+
 #include "Block.h"
 #include "../common/SoundPross.h"
 
@@ -17,9 +17,9 @@ Block::~Block()
 void Block::Init(void)
 {
 	// 画像をランダムに表示
-	for (int y = 0; y < block_hight_; y++)
+	for (int y = 0; y < blockNum_.y_; y++)
 	{
-		for (int x = 0; x < block_witdh_; x++)
+		for (int x = 0; x < blockNum_.x_; x++)
 		{
 			// ブロックをランダムに表示
 			nowBlock_.blockType[x][y] = GetRand(9);
@@ -30,38 +30,74 @@ void Block::Init(void)
 		}
 	}
 
-	// 画像の読み込み
-	image_.LoadImg();
-
 	// 背景
 	backImage_ = LoadGraph("Resource/img/Summer2.jpg");
 
+	// ブロックの画像の読み込み
+	LoadBlockPic();
+
+	// ランクの画像の読み込み
+	LoadRankPic();
+
+	// 終了時のランクの画像の読み込み
+	LoadFinishRankPic();
+
+	// 枠組みの画像のロード
+	LoadFramePic();
+
 	// フォント埋め込み
 	timePic_ = LoadGraph("Resource/img/Time.png");
-	blockMoveCountPic_ = LoadGraph("Resource/img/Move.png");
 	conditionPic_ = LoadGraph("Resource/img/ClearString.png");
 	scorePic_ = LoadGraph("Resource/img/ScorePic.png");
-	rankS_ = LoadGraph("Resource/img/S.png");
-	rankA_ = LoadGraph("Resource/img/A.png");
-	rankB_ = LoadGraph("Resource/img/B.png");
-	rankC_ = LoadGraph("Resource/img/C.png");
-	rankD_ = LoadGraph("Resource/img/D.png");
-	StopPicS_ = LoadGraph("Resource/img/stopPic_S.png");
-	StopPicA_ = LoadGraph("Resource/img/stopPic_A.png");
-	StopPicB_ = LoadGraph("Resource/img/stopPic_B.png");
-	StopPicC_ = LoadGraph("Resource/img/stopPic_C.png");
-	StopPicD_ = LoadGraph("Resource/img/stopPic_D.png");
 
-	// 枠組み
+	// フォントの設定
+	fontHandle_a_ = CreateFontToHandle("HG創英角ﾎﾟｯﾌﾟ体", 65, NULL, DX_FONTTYPE_ANTIALIASING);
+	fontHandle_b_ = CreateFontToHandle("HG創英角ﾎﾟｯﾌﾟ体", 70, NULL, DX_FONTTYPE_ANTIALIASING);
+	blockMoveCountFontHandle_ = CreateFontToHandle("HG創英角ﾎﾟｯﾌﾟ体", 30, NULL, DX_FONTTYPE_ANTIALIASING);
+}
+
+void Block::LoadBlockPic(void)
+{
+	// 画像の読み込み
+	blockPic_[0] = LoadGraph("Resource/img/cookies_001.png");
+	blockPic_[1] = LoadGraph("Resource/img/cookies_002.png");
+	blockPic_[2] = LoadGraph("Resource/img/cookies_003.png");
+	blockPic_[3] = LoadGraph("Resource/img/cookies_004.png");
+	blockPic_[4] = LoadGraph("Resource/img/cookies_011.png");
+	blockPic_[5] = LoadGraph("Resource/img/cookies_010.png");
+	blockPic_[6] = LoadGraph("Resource/img/cookies_009.png");
+	blockPic_[7] = LoadGraph("Resource/img/cookies_013.png");
+	blockPic_[8] = LoadGraph("Resource/img/cookies_020.png");
+	blockPic_[9] = LoadGraph("Resource/img/cookies_019.png");
+}
+
+void Block::LoadRankPic(void)
+{
+	// ランクの画像の読み込み
+	rankPic_[0] = LoadGraph("Resource/img/S.png");
+	rankPic_[1] = LoadGraph("Resource/img/A.png");
+	rankPic_[2] = LoadGraph("Resource/img/B.png");
+	rankPic_[3] = LoadGraph("Resource/img/C.png");
+	rankPic_[4] = LoadGraph("Resource/img/D.png");
+}
+
+void Block::LoadFinishRankPic(void)
+{
+	// 終了時のランクの画像の読み込み
+	finishPic_[0] = LoadGraph("Resource/img/stopPic_S.png");
+	finishPic_[1] = LoadGraph("Resource/img/stopPic_A.png");
+	finishPic_[2] = LoadGraph("Resource/img/stopPic_B.png");
+	finishPic_[3] = LoadGraph("Resource/img/stopPic_C.png");
+	finishPic_[4] = LoadGraph("Resource/img/stopPic_D.png");
+}
+
+void Block::LoadFramePic(void)
+{
+	// 枠組みの画像の読み込み
 	blueFrameBlock_ = LoadGraph("Resource/img/blueBlockFrame.png");
 	blueFrameMove_ = LoadGraph("Resource/img/blueFrameMove.png");
 	blueFrameCong_ = LoadGraph("Resource/img/blueConditionFrame.png");
 	blueFrameTimeAndUntilscore_ = LoadGraph("Resource/img/blueFrameTimeAndUntilscore.png");
-
-	// フォントの設定
-	FontHundle = CreateFontToHandle("HG創英角ﾎﾟｯﾌﾟ体", 65, NULL, DX_FONTTYPE_ANTIALIASING);
-	FontHundle2 = CreateFontToHandle("HG創英角ﾎﾟｯﾌﾟ体", 70, NULL, DX_FONTTYPE_ANTIALIASING);
-	blockMoveCountFontHundle = CreateFontToHandle("HG創英角ﾎﾟｯﾌﾟ体", 30, NULL, DX_FONTTYPE_ANTIALIASING);
 }
 
 void Block::Update(void)
@@ -73,7 +109,7 @@ void Block::Update(void)
 	}
 
 	// ブロックの移動処理
-	MoveBlock();
+	ControlBlock();
 
 	// ブロックの更新処理
 	UpdateBlock();
@@ -82,7 +118,7 @@ void Block::Update(void)
 	DownBlock();
 }
 
-void Block::MoveBlock(void)
+void Block::ControlBlock(void)
 {
 	// キー情報の取得
 	key_.GetKey();	
@@ -97,54 +133,54 @@ void Block::MoveBlock(void)
 			if (key_.input[KEY_INPUT_RIGHT] == 1)
 			{
 				// 1ブロック分進める
-				boxpos_.x_ = boxpos_.x_ + blockSize_.x_;
+				boxPos_.x_ = boxPos_.x_ + blockSize_.x_;
 				// 範囲
-				if (boxpos_.x_ > (blockSize_.x_ * 5))
+				if (boxPos_.x_ > (blockSize_.x_ * 5))
 				{
-					boxpos_.x_ = blockSize_.x_ * 5;
+					boxPos_.x_ = blockSize_.x_ * 5;
 				}
 
 				// サウンドの再生
-				lpSooundPross.PlayBackSound(SOUNDNAME_SE::MoveBlock,lpSooundPross.GetVolume(), false);
+				lpSooundPross.PlayBackSound(SOUNDNAME_SE::ControlBlock,lpSooundPross.GetVolume(), false);
 			}
 			if (key_.input[KEY_INPUT_LEFT] == 1)
 			{
-				boxpos_.x_ = boxpos_.x_ - blockSize_.x_;
-				if (boxpos_.x_ < 0)
+				boxPos_.x_ = boxPos_.x_ - blockSize_.x_;
+				if (boxPos_.x_ < 0)
 				{
-					boxpos_.x_ = 0;
+					boxPos_.x_ = 0;
 				}
 
 				// サウンドの再生
-				lpSooundPross.PlayBackSound(SOUNDNAME_SE::MoveBlock, lpSooundPross.GetVolume(), false);
+				lpSooundPross.PlayBackSound(SOUNDNAME_SE::ControlBlock, lpSooundPross.GetVolume(), false);
 			}
 			if (key_.input[KEY_INPUT_UP] == 1)
 			{
-				boxpos_.y_ = boxpos_.y_ - blockSize_.y_;
-				if (boxpos_.y_ < 0)
+				boxPos_.y_ = boxPos_.y_ - blockSize_.y_;
+				if (boxPos_.y_ < 0)
 				{
-					boxpos_.y_ = 0;
+					boxPos_.y_ = 0;
 				}
 
 				// サウンドの再生
-				lpSooundPross.PlayBackSound(SOUNDNAME_SE::MoveBlock, lpSooundPross.GetVolume(), false);
+				lpSooundPross.PlayBackSound(SOUNDNAME_SE::ControlBlock, lpSooundPross.GetVolume(), false);
 			}
 			if (key_.input[KEY_INPUT_DOWN] == 1)
 			{
-				boxpos_.y_ = boxpos_.y_ + blockSize_.y_;
-				if (boxpos_.y_ > (blockSize_.y_ * 5))
+				boxPos_.y_ = boxPos_.y_ + blockSize_.y_;
+				if (boxPos_.y_ > (blockSize_.y_ * 5))
 				{
-					boxpos_.y_ = (blockSize_.y_ * 5);
+					boxPos_.y_ = (blockSize_.y_ * 5);
 				}
 
 				// サウンドの再生
-				lpSooundPross.PlayBackSound(SOUNDNAME_SE::MoveBlock, lpSooundPross.GetVolume(), false);
+				lpSooundPross.PlayBackSound(SOUNDNAME_SE::ControlBlock, lpSooundPross.GetVolume(), false);
 			}
 
 			if (key_.input[KEY_INPUT_Z] == 1)
 			{
-				boxSelpos_ = boxpos_;
-				ZkeyCount_++;
+				boxSelPos_ = boxPos_;
+				zkeyCount_++;
 
 				// サウドの再生
 				lpSooundPross.PlayBackSound(SOUNDNAME_SE::Select, lpSooundPross.GetVolume(), false);
@@ -155,32 +191,33 @@ void Block::MoveBlock(void)
 
 void Block::UpdateBlock(void)
 {
-	if (ZkeyCount_ == 1)
+	if (zkeyCount_ == 1)
 	{
 		// 一時変数で入れ替え処理
 		int change_block;
-		change_block = nowBlock_.blockType[boxpos_.x_ / blockSize_.x_][boxpos_.y_ / blockSize_.y_];
-		nowBlock_.blockType[boxpos_.x_ / blockSize_.x_][boxpos_.y_ / blockSize_.y_] = nowBlock_.blockType[boxSelpos_.x_ / blockSize_.x_][boxSelpos_.y_ / blockSize_.y_];
-		nowBlock_.blockType[boxSelpos_.x_ / blockSize_.x_][boxSelpos_.y_ / blockSize_.y_] = change_block;
+		change_block = nowBlock_.blockType[boxPos_.x_ / blockSize_.x_][boxPos_.y_ / blockSize_.y_];
+		nowBlock_.blockType[boxPos_.x_ / blockSize_.x_][boxPos_.y_ / blockSize_.y_] = nowBlock_.blockType[boxSelPos_.x_ / blockSize_.x_][boxSelPos_.y_ / blockSize_.y_];
+		nowBlock_.blockType[boxSelPos_.x_ / blockSize_.x_][boxSelPos_.y_ / blockSize_.y_] = change_block;
 
-		boxSelpos_.x_ = boxpos_.x_;
-		boxSelpos_.y_ = boxpos_.y_;
+		boxSelPos_.x_ = boxPos_.x_;
+		boxSelPos_.y_ = boxPos_.y_;
 	}
-	else if (ZkeyCount_ == 2 || setTime < 0)
+	else if (zkeyCount_ == 2 || setTime_ < 0)
 	{
 		// ブロックを削除
 		DeleBlock();
 
-		ZkeyCount_ = 0;
+		zkeyCount_ = 0;
 
-		for (int y = 0; y < block_hight_; y++)
+		for (int y = 0; y < blockNum_.y_; y++)
 		{
-			for (int x = 0; x < block_witdh_; x++)
+			for (int x = 0; x < blockNum_.x_; x++)
 			{
 				// ブロックが消えたら
 				if (nowBlock_.blockType[x][y] == -1)
 				{
-					nowBlock_.blockType[x][y] = GetRand(5);	// 再配置
+					// 再配置
+					nowBlock_.blockType[x][y] = GetRand(5);
 					nowBlock_.blockDelete_[x][y] = 0;
 					nowBlock_.bolockDrop_[x][y] = 0;
 				}
@@ -192,9 +229,9 @@ void Block::UpdateBlock(void)
 void Block::DeleBlock(void)
 {
 	// X方向の消える処理
-	for (int y = 0; y < block_hight_; y++)
+	for (int y = 0; y < blockNum_.y_; y++)
 	{
-		for (int x = 0; x < block_witdh_ - 2; x++)
+		for (int x = 0; x < blockNum_.x_ - 2; x++)
 		{
 			// 3ブロック以上が一致しているかを確認する
 			if (nowBlock_.blockType[x + 0][y] == nowBlock_.blockType[x + 1][y] &&
@@ -206,15 +243,16 @@ void Block::DeleBlock(void)
 			{
 				for (int i = 0; i < 3; i++)
 				{
-					nowBlock_.blockDelete_[x + i][y] = 1;	// もし一致したらブロックを消す
+					// もし一致したらブロックを消す
+					nowBlock_.blockDelete_[x + i][y] = 1;	
 				}
 			}
 		}
 	}
 	// Y方向の消える処理
-	for (int y = 0; y < block_hight_ - 2; y++)
+	for (int y = 0; y < blockNum_.y_ - 2; y++)
 	{
-		for (int x = 0; x < block_witdh_; x++)
+		for (int x = 0; x < blockNum_.x_; x++)
 		{
 			// 3ブロックが以上が一致しているかを確認する
 			if (nowBlock_.blockType[x][y + 0] == nowBlock_.blockType[x][y + 1] &&
@@ -226,15 +264,16 @@ void Block::DeleBlock(void)
 			{
 				for (int i = 0; i < 3; i++)
 				{
-					nowBlock_.blockDelete_[x][y + i] = 1;	// もし一致したらブロックを消す
+					// もし一致したらブロックを消す
+					nowBlock_.blockDelete_[x][y + i] = 1;	
 				}
 			}
 		}
 	}
 	// 処理をしたので実際に消える処理
-	for (int y = 0; y < block_hight_; y++)
+	for (int y = 0; y < blockNum_.y_; y++)
 	{
-		for (int x = 0; x < block_witdh_; x++)
+		for (int x = 0; x < blockNum_.x_; x++)
 		{
 			// ブロックが消えたら
 			if (nowBlock_.blockDelete_[x][y] == 1)
@@ -256,9 +295,9 @@ void Block::DownBlock(void)
 {
 	// ブロックが消えたらブロックを落とす
 	// ブロックが何かしらある場合
-	for (int y = 0; y < block_hight_; y++)
+	for (int y = 0; y < blockNum_.y_; y++)
 	{
-		for (int x = 0; x < block_witdh_; x++)
+		for (int x = 0; x < blockNum_.x_; x++)
 		{
 			if (nowBlock_.blockType[x][y] != -1)
 			{
@@ -296,30 +335,29 @@ void Block::Draw(void)
 
 	// 文字画像の描画
 	DrawGraph(0,-30, timePic_, true);
-	DrawGraph(720, 400, blockMoveCountPic_, true);
 	DrawGraph(0, 0, conditionPic_, true);
 	DrawGraph(0, 0, scorePic_, true);
 
 	// スコアに応じてランクを変更
 	if (score_ < 3000)
 	{
-		DrawGraph(0, 0, rankD_, true);
+		DrawGraph(0, 0, rankPic_[4], true);
 	}
 	else if (score_ >= 3000 && score_ < 6000)
 	{
-		DrawGraph(0, 0, rankC_, true);
+		DrawGraph(0, 0, rankPic_[3], true);
 	}
 	else if (score_ >= 6000 && score_ < 10000)
 	{
-		DrawGraph(0, 0, rankB_, true);
+		DrawGraph(0, 0, rankPic_[2], true);
 	}
 	else if (score_ >= 10000 && score_ < 20000)
 	{
-		DrawGraph(0, 0, rankA_, true);
+		DrawGraph(0, 0, rankPic_[1], true);
 	}
 	else if (score_ >= 20000)
 	{
-		DrawGraph(0, 0, rankS_, true);
+		DrawGraph(0, 0, rankPic_[0], true);
 	}
 
 	// 枠組みの表示
@@ -330,18 +368,25 @@ void Block::Draw(void)
 	DrawGraph(0, -32, blueFrameCong_, true);
 
 	// フォント
-	DrawFormatStringToHandle(800, 350, 0xffa500, FontHundle, "%d", static_cast<int>(limitTime));
-	DrawFormatStringToHandle(800, 230, 0xffa500, FontHundle, "%u", score_);
+	DrawFormatStringToHandle(800, 350, 0xffa500, fontHandle_a_, "%d", static_cast<int>(limitTime));
+	DrawFormatStringToHandle(800, 230, 0xffa500, fontHandle_a_, "%u", score_);
 
 	// 画像の描画
-	for (int y = 0; y < block_hight_; y++)
+	for (int y = 0; y < blockNum_.y_; y++)
 	{
-		for (int x = 0; x < block_witdh_; x++)
+		for (int x = 0; x < blockNum_.x_; x++)
 		{
 			if (nowBlock_.blockType[x][y] != -1)
 			{
 				// ブロック画像を描画する
-				DrawRotaGraph(x * blockSize_.x_ + BlockValX + 30, y * blockSize_.y_ + BlockValY, blockMult_, 0, image_.blockPic_[nowBlock_.blockType[x][y]], true);
+				DrawRotaGraph(
+					x * blockSize_.x_ + blockValSize_.x_ + 30,
+					y * blockSize_.y_ + blockValSize_.y_, 
+					blockMult_, 
+					0,
+					blockPic_[nowBlock_.blockType[x][y]], 
+					true
+				);
 			}
 
 
@@ -350,29 +395,29 @@ void Block::Draw(void)
 				// 選択用のブロック
 				if ((static_cast<int>(limitTime) >= 0))
 				{
-					if (x == boxpos_.x_ / blockSize_.x_ &&
-						y == boxpos_.y_ / blockSize_.y_)
+					if (x == boxPos_.x_ / blockSize_.x_ &&
+						y == boxPos_.y_ / blockSize_.y_)
 					{
 						// Zキーの状態によりボックスの色を買える
-						switch (ZkeyCount_)
+						switch (zkeyCount_)
 						{
 						case 0:
-							setTime = 5;
-							DrawBox(boxpos_.x_ + boxValX + 30, boxpos_.y_ + boxValY, boxpos_.x_ + blockSize_.x_ + boxValX + 30, boxpos_.y_ + blockSize_.y_ + boxValY, 0x00ffff, false);
+							setTime_ = 5;
+							DrawBox(boxPos_.x_ + boxSize_.x_ + 30, boxPos_.y_ + boxSize_.y_, boxPos_.x_ + blockSize_.x_ + boxSize_.x_ + 30, boxPos_.y_ + blockSize_.y_ + boxSize_.y_, 0x00ffff, false);
 							break;
 						case 1:
-							DrawBox(boxSelpos_.x_ + boxValX + 30, boxSelpos_.y_ + boxValY, boxSelpos_.x_ + blockSize_.x_ + boxValX + 30, boxSelpos_.y_ + blockSize_.y_ + boxValY, 0xff00ff, false);
+							DrawBox(boxSelPos_.x_ + boxSize_.x_ + 30, boxSelPos_.y_ + boxSize_.y_, boxSelPos_.x_ + blockSize_.x_ + boxSize_.x_ + 30, boxSelPos_.y_ + blockSize_.y_ + boxSize_.y_, 0xff00ff, false);
 
 							// ブロックを扱える時間を計測
-							if (setTime >= 0)
+							if (setTime_ >= 0)
 							{
-								setTime -= deltaTime;
+								setTime_ -= deltaTime;
 							}
-							else if (setTime <= 0)
+							else if (setTime_ <= 0)
 							{
-								ZkeyCount_ = 0;
+								zkeyCount_ = 0;
 							}
-							DrawFormatString(boxSelpos_.x_ + boxValX + 30, boxSelpos_.y_ + boxValY, 0x0000ff, "%d", static_cast<int>(setTime));
+							DrawFormatString(boxSelPos_.x_ + boxSize_.x_ + 30, boxSelPos_.y_ + boxSize_.y_, 0x0000ff, "%d", static_cast<int>(setTime_));
 
 							break;
 						}
@@ -384,38 +429,38 @@ void Block::Draw(void)
 
 	if ((static_cast<int>(limitTime <= 0)))
 	{
-		for (int y = 0; y < block_hight_; y++)
+		for (int y = 0; y < blockNum_.y_; y++)
 		{
-			for (int x = 0; x < block_witdh_; x++)
+			for (int x = 0; x < blockNum_.x_; x++)
 			{
 				// ブロックにフィルターを掛ける
-				GraphFilter(image_.blockPic_[nowBlock_.blockType[x][y]], DX_GRAPH_FILTER_MONO, -1, 45);
+				GraphFilter(blockPic_[nowBlock_.blockType[x][y]], DX_GRAPH_FILTER_MONO, -1, 45);
 
 				// ランクをつける
 				if (score_ < 3000)
 				{
 					// ランクD
-					DrawGraph(0, 0, StopPicD_, true);
+					DrawGraph(0, 0, finishPic_[4], true);
 				}
 				else if (score_ >= 3000 && score_ < 6000)
 				{
 					// ランクC
-					DrawGraph(0, 0, StopPicC_, true);
+					DrawGraph(0, 0, finishPic_[3], true);
 				}
 				else if (score_ >= 6000 && score_ < 10000)
 				{
 					// ランクB
-					DrawGraph(0, 0, StopPicB_, true);
+					DrawGraph(0, 0, finishPic_[2], true);
 				}
 				else if (score_ >= 10000 && score_ < 20000)
 				{
 					// ランクA
-					DrawGraph(0, 0, StopPicA_, true);
+					DrawGraph(0, 0, finishPic_[1], true);
 				}
 				else if (score_ >= 20000)
 				{
 					// ランクS
-					DrawGraph(0, 0, StopPicS_, true);
+					DrawGraph(0, 0, finishPic_[0], true);
 				}
 			}
 		}
@@ -438,11 +483,11 @@ void Block::Draw(void)
 	}
 	
 	// 制限時間になったら終了用のSEを再生する
-	if (count_ == 0)
+	if (loopcount_ == 0)
 	{
 		if (limitTime <= 0.0)
 		{
-			count_++;
+			loopcount_++;
 			lpSooundPross.PlayBackSound(SOUNDNAME_SE::Finish, lpSooundPross.GetVolume(), false);
 		}
 	}
