@@ -45,7 +45,7 @@ uniqueScene TitleScene::Updata(double delta, uniqueScene ownScene)
 		return std::make_unique<GameScene>();
 	}
 
-	DrawOwnScreen(delta);		// ©•ª‚ÌƒXƒNƒŠ[ƒ“‘Î‚µ‚Ä•`‰æî•ñ‚ğ—^‚¦‚é
+	DrawOwnScreen(delta);
 	return ownScene;
 }
 

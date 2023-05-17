@@ -5,7 +5,7 @@
 
 #define lpSooundPross SoundProcess::GetInstance()
 
-//SE‚Ìí—Ş
+// SE‚Ìí—Ş
 enum class SOUNDNAME_SE
 {
 	ControlBlock,
@@ -24,8 +24,11 @@ enum class SOUNDNAME_BGM
 	Max
 };
 
-constexpr int seNum = static_cast<int>(SOUNDNAME_SE::Max) + 1;				// SE‚Ì”
-constexpr int bgmNum = static_cast<int>(SOUNDNAME_BGM::Max) + 1;			// BGM‚Ì”
+// SE‚Ì”
+constexpr int seNum = static_cast<int>(SOUNDNAME_SE::Max) + 1;		
+
+// BGM‚Ì”
+constexpr int bgmNum = static_cast<int>(SOUNDNAME_BGM::Max) + 1;			
 
 class SoundProcess
 {

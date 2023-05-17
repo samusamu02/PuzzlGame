@@ -29,10 +29,5 @@ private:
     int count = 0;
 
     double titleExrate = 0.0;
-
-    double roll_ = 0;
-    Vector2 boxPos_;
-    bool rollflg_ = true;
-    NowBlock nowBlock_;
 };
 

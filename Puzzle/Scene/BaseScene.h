@@ -17,10 +17,13 @@ public:
 	virtual uniqueScene Updata(double delta, uniqueScene ownScene) = 0;
 	virtual void Draw(double delta);
 	virtual void DrawOwnScreen(double delta) = 0;
-	virtual Scene GetSceneID(void) = 0;		// 今どのシーンなのか
+
+	// 現在のシーンの取得
+	virtual Scene GetSceneID(void) = 0;		
 private:
 protected:
-	int screenID_;		// データの格納
+	// データの格納
+	int screenID_;		
 
 	int nowScore = 0;
 
