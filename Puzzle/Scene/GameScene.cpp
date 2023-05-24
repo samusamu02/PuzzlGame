@@ -5,6 +5,7 @@
 
 GameScene::GameScene()
 {
+	// 初期化処理呼び出し
 	Init();
 
 	// ゲームシーンのサウドの初期化
@@ -12,6 +13,7 @@ GameScene::GameScene()
 
 	// BGMの再生
 	lpSooundPross.PlayBackSound(SOUNDNAME_BGM::GameSceneBGM, lpSooundPross.GetVolume(), true);
+
 
 	DrawOwnScreen(0.0);
 }
@@ -30,13 +32,14 @@ bool GameScene::Init(void)
 	// ブロッククラスのインスタンス
 	block_ = std::make_unique<Block>();
 
-
 	return true;
 }
 
 uniqueScene GameScene::Updata(double delta, uniqueScene ownScene)
 {
-	key_.GetKey();	// キーの情報取得
+	key_.GetKey();	
+
+	// ブロッククラスの更新処理
 	block_->Update();
 
 	// シーン分岐（ゲームクリア、ゲームオーバー）
@@ -57,5 +60,7 @@ void GameScene::DrawOwnScreen(double delta)
 	// 自分自身のスクリーンに対してDraw
 	SetDrawScreen(screenID_);
 	ClsDrawScreen();
+
+	// ブロッククラスの描画処理
 	block_->Draw();
 }

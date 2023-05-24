@@ -3,7 +3,7 @@
 // シーンの種類
 enum class Scene
 {
-	Title,
-	Game,
+	Title,		// タイトルシーン
+	Game,		// ゲームシーン
 	Max
 };

@@ -2,7 +2,8 @@
 
 #include "../Scene/BaseScene.h"
 
-#define lpSceneMng SceneMag::GetInstance()		// マネージャークラスの呼び出し
+// マネージャークラスの呼び出し
+#define lpSceneMng SceneMag::GetInstance()		
 
 class SceneMag
 {
@@ -13,27 +14,15 @@ public:
 		static SceneMag s_Instance;
 		return s_Instance;
 	}
-
-	//static void Create(void)
-	//{
-	//	if (s_Instance == nullptr)
-	//	{
-	//		s_Instance = new SceneMag();
-	//	}
-	//}
-	//static void Destroy(void)
-	//{
-	//	delete s_Instance;
-	//	s_Instance = nullptr;
-	//}
 	void Run(void);
 	void Update(void);
 	void Draw(void);
 private:
-	//static SceneMag* s_Instance;
-	bool SysInit(void);		// 初期化関数
-	bool initFlag_;			// 初期化フラグ
+	// 初期化関数
+	bool SysInit(void);		
 
+	// 初期化フラグ
+	bool initFlag_;			
 
 	SceneMag();
 	~SceneMag();

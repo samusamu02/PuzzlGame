@@ -9,10 +9,16 @@ public:
     GameScene();
     ~GameScene();
 private:
+    // 初期化処理
     bool Init(void) override;
+
+    // 更新処理
     uniqueScene Updata(double delta, uniqueScene ownScene) override;
-    void DrawOwnScreen(double delta) override;  // 自分自身を描画
-    Scene GetSceneID(void) override { return Scene::Game; };    // 自分はゲームシーン
+
+    // 描画処理
+    void DrawOwnScreen(double delta) override; 
+
+    Scene GetSceneID(void) override { return Scene::Game; };    
 };
 
 

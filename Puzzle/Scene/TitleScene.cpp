@@ -6,7 +6,7 @@
 #include "../common/SoundPross.h"
 TitleScene::TitleScene()
 {
-	// イニシャライズを呼び出し忘れ防止
+	// 初期化処理呼び出し
 	Init();
 
 	// タイトルシーン用の
@@ -15,7 +15,7 @@ TitleScene::TitleScene()
 	// タイトルシーンのBGM再生
 	lpSooundPross.PlayBackSound(SOUNDNAME_BGM::TitleSceneBGM, lpSooundPross.GetVolume(), true);
 
-	// 黒い画面が出るのでダミーで一度描画処理をする
+	// バグ対策として描画処理を先に呼ぶ
 	DrawOwnScreen(0.0);
 }
 
@@ -27,9 +27,33 @@ TitleScene::~TitleScene()
 
 bool TitleScene::Init(void)
 {
-	TitlePic_ = LoadGraph("Resource/img/TitlePic.png");
-	PlayKeyPic_ = LoadGraph("Resource/img/press th space key.png");
-	TitleBackGPic_ = LoadGraph("Resource/img/nightbackgroundwithmoon.png");
+	// タイトルの背景
+	titleBackPic_ = LoadGraph("Resource/img/nightbackgroundwithmoon.png");
+
+	// タイトルのロゴ
+	titlePic_ = LoadGraph("Resource/img/TitlePic.png");
+
+	// キー入力待機
+	playKeyPic_ = LoadGraph("Resource/img/press th space key.png");
+
+	// タイトルロゴの拡大倍率
+	titleExrate = 0.0;
+
+	// タイトルロゴの座標
+	titlePicPos_ = { 0,0 };
+
+	// タイトルロゴのサイズ
+	titlePicSize_ = { 640,320 };
+
+	// キー入力の画像の座標
+	playKeyPicPos_ = { 0,0 };
+
+	// キー入力待機の画像のサイズ
+	playKeyPicSize_ = { 640,320 };
+
+	// 点滅用のカウンター変数
+	count = 0;
+
 	return true;
 }
 
@@ -54,9 +78,14 @@ void TitleScene::DrawOwnScreen(double delta)
 	// 自分自身のスクリーンに対してDraw
 	SetDrawScreen(screenID_);
 	ClsDrawScreen();
-	DrawGraph(0, 0, TitleBackGPic_, true);
-	DrawRotaGraph((titlePos_.x_ + (titlePicSizeX_ / 2)) + 250, titlePos_.y_ + (titlePicSizeY_ / 2) + 150, titleExrate, 0.0, TitlePic_, true);
-	// 徐々に小さくする
+
+	// 背景の描画
+	DrawGraph(0, 0, titleBackPic_, true);
+
+	// タイトルロゴの描画
+	DrawRotaGraph((titlePicPos_.x_ + (titlePicSize_.x_ / 2)) + 250, titlePicPos_.y_ + (titlePicSize_.y_ / 2) + 150, titleExrate, 0.0, titlePic_, true);
+
+	// 徐々に大きくする
 	if (titleExrate < 1.0)
 	{
 		titleExrate += 0.01;
@@ -67,7 +96,7 @@ void TitleScene::DrawOwnScreen(double delta)
 		// 点滅表示
 		if ((count / 50) % 2 == 0)
 		{
-			DrawGraph(playKeyPicPos_.x_ + (titlePicSizeX_ / 2) - 50, playKeyPicPos_.y_ + (playKeyPicSizeY_ / 2) + 350, PlayKeyPic_, true);
+			DrawGraph(playKeyPicPos_.x_ + (playKeyPicSize_.x_ / 2) - 50, playKeyPicPos_.y_ + (playKeyPicSize_.y_ / 2) + 350, playKeyPic_, true);
 		}
 		count++;
 	}

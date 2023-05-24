@@ -6,12 +6,11 @@
 #include "../Scene/GameScene.h"
 #include "../common/Dec.h"
 
-//SceneMag* SceneMag::s_Instance = nullptr;
-
 // スクリーンサイズ
 constexpr int ScreenSizeX = 1024;
 constexpr int ScreenSizeY = 768;
 
+// キー情報
 Key key;
 
 // メインループ
@@ -28,18 +27,16 @@ void SceneMag::Run(void)
 
 	// 初期シーンのインスタンス
 	// TitleSceneの実態を生成
-	 scene_ = std::make_unique<TitleScene>();
+	scene_ = std::make_unique<TitleScene>();
 
 	std::chrono::system_clock::time_point nowTime, oldTime;
 	nowTime = std::chrono::system_clock::now();
 	while (ProcessMessage() == 0 && key.GetKey() == 0 && key.input[KEY_INPUT_ESCAPE] == 0)
 	{
+		// デルタタイムの計算
 		oldTime = nowTime;
 		nowTime = std::chrono::system_clock::now();
 		auto elTime = nowTime - oldTime;
-
-
-
 		auto msec = std::chrono::duration_cast<std::chrono::microseconds>(elTime).count();
 		auto delta = msec / 1000000.0;
 
@@ -65,6 +62,7 @@ void SceneMag::Draw(void)
 
 bool SceneMag::SysInit(void)
 {
+	// Dxlibの初期化
 	SetGraphMode(ScreenSizeX, ScreenSizeY, 32);
 	SetWindowIconID(001);
 	ChangeWindowMode(true);
@@ -79,6 +77,7 @@ bool SceneMag::SysInit(void)
 
 SceneMag::SceneMag()
 {
+	// 初期化成功フラグの取得
 	initFlag_ = SysInit();
 }
 

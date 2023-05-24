@@ -104,12 +104,16 @@ public:
 	// BGMのユーザー音量調整を渡す
 	float GetBGMVolumeEntire();
 
+	// 標準の音量をセットする
 	void SetDefaultVolume(float defaultVol);
 
+	// 標準の音量を取得する
 	float GetDefaultVolume();
 
+	// ボリュームをセットする
 	void SetVolume(float volume);
 
+	// ボリュームを取得する
 	float GetVolume();
 
 private:
